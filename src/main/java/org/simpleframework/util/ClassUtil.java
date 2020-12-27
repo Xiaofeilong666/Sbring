@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashSet;
@@ -104,9 +105,6 @@ public class ClassUtil {
                 extractClassFile(emptyClassSet,f,packageName);
             }
         }
-
-
-
     }
 
     /**
@@ -117,9 +115,6 @@ public class ClassUtil {
         return Thread.currentThread().getContextClassLoader();
     }
 
-    public static void main(String[] args) {
-        extractPackageClass("com.wcl.entity");
-    }
 
     /**
      * 实例化class
@@ -135,6 +130,16 @@ public class ClassUtil {
             return  (T)constructor .newInstance();
         } catch (Exception e) {
             log.error("初始化类实例异常",e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void setField(Field field, Object target, Object value, boolean accessible){
+        field.setAccessible(accessible);
+        try {
+            field.set(target, value);
+        } catch (IllegalAccessException e) {
+            log.error("设置属性失败！",e);
             throw new RuntimeException(e);
         }
     }
